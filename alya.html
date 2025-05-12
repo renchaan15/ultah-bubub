@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Level 20 Bububb</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #ffebeb;
+            color: #333;
+            transition: background-color 1s ease;
+            overflow-x: hidden;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            text-align: center;
+        }
+
+        header {
+            position: relative;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #ffadad, #ffd6a5);
+            border-radius: 0 0 50% 50% / 30px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: #ff4081;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {transform: translateY(0);}
+            40% {transform: translateY(-20px);}
+            60% {transform: translateY(-10px);}
+        }
+
+        p {
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            line-height: 1.6;
+        }
+
+        .heart {
+            position: absolute;
+            font-size: 1.5rem;
+            color: #ff4081;
+            opacity: 0;
+            z-index: -1;
+        }
+
+        .btn {
+            background-color: #ff4081;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 1.2rem;
+            border-radius: 50px;
+            cursor: pointer;
+            margin: 15px 0;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 7px 10px rgba(0,0,0,0.15);
+            background-color: #e91e63;
+        }
+
+        #startBtn {
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .memory-section, .quiz-section, .wish-section, .gallery-section, .message-section {
+            padding: 50px 20px;
+            margin: 30px 0;
+            border-radius: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: all 0.5s ease;
+        }
+
+        .memory-section {
+            background-color: #ffccd5;
+        }
+
+        .quiz-section {
+            background-color: #b5e8ff;
+        }
+
+        .wish-section {
+            background-color: #b8e0d2;
+        }
+
+        .gallery-section {
+            background-color: #fcf6bd;
+        }
+
+        .message-section {
+            background-color: #d0d1ff;
+        }
+
+        #memoryGame {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin: 20px auto;
+            max-width: 600px;
+        }
+
+        .memory-card {
+            height: 80px;
+            background-color: #ff8fab;
+            border-radius: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2rem;
+            cursor: pointer;
+            transform-style: preserve-3d;
+            transition: transform 0.5s;
+        }
+
+        .memory-card.flipped {
+            transform: rotateY(180deg);
+            background-color: #a2d2ff;
+        }
+
+        .memory-card.matched {
+            background-color: #b5e8ff;
+            transform: rotateY(180deg);
+        }
+
+        #quizContainer .question {
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+
+        #quizContainer .answers {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        #quizContainer .answer-btn {
+            background-color: #bbd0ff;
+            border: none;
+            padding: 10px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        #quizContainer .answer-btn:hover {
+            background-color: #a2d2ff;
+        }
+
+        #quizContainer .answer-btn.correct {
+            background-color: #a0e7a0;
+        }
+
+        #quizContainer .answer-btn.incorrect {
+            background-color: #ff9999;
+        }
+
+        #wishContainer {
+            position: relative;
+            height: 300px;
+            overflow: hidden;
+        }
+
+        .balloon {
+            position: absolute;
+            bottom: -100px;
+            width: 40px;
+            height: 50px;
+            background-color: #ff4081;
+            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+            animation: float 10s linear infinite;
+        }
+
+        .balloon::before {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 20px;
+            width: 1px;
+            height: 30px;
+            background-color: #ff4081;
+            transform: translateX(-50%);
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(0) rotate(0);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-350px) rotate(20deg);
+                opacity: 0;
+            }
+        }
+
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .gallery-item {
+            height: 150px;
+            background-color: #ccc;
+            border-radius: 10px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .gallery-item:hover {
+            transform: scale(1.05);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.8);
+            z-index: 100;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            max-width: 90%;
+            max-height: 90%;
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 1.5rem;
+            color: white;
+            cursor: pointer;
+            background-color: rgba(0,0,0,0.5);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            background-color: #f0f;
+            animation: confetti-fall 5s linear forwards;
+            z-index: 10;
+        }
+
+        @keyframes confetti-fall {
+            0% {
+                transform: translateY(-100px) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        #finalMessage {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin: 20px 0;
+            padding: 20px;
+            border-radius: 10px;
+            background-color: #ffd6ff;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            transform: scale(0);
+            transition: transform 0.5s ease;
+        }
+
+        footer {
+            margin-top: 50px;
+            padding: 20px;
+            background-color: #ffadad;
+            border-radius: 20px 20px 0 0;
+            box-shadow: 0 -5px 15px rgba(0,0,0,0.1);
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .memory-card {
+                height: 60px;
+                font-size: 1.5rem;
+            }
+            
+            #memoryGame {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Happy Sweet 20, Alyaa!!!❤️</h1>
+            <p>a special day for my special one<33</p>
+            <button id="startBtn" class="btn">Let's celebrate!</button>
+        </header>
+
+        <div id="content" class="hidden">
+            <section class="memory-section">
+                <h2>Main dulu all, bikinnya lama nii</h2>
+                <p>Masa langsung ke intinya :(</p>
+                <div id="memoryGame"></div>
+                <div id="memoryMessage"></div>
+            </section>
+
+            <section class="quiz-section hidden">
+                <h2>Seberapa Baik Lo Kenal Gue??😼</h2>
+                <p>Jawab pertanyaan yang gue bikin tentang kita(?)</p>
+                <div id="quizContainer"></div>
+                <div id="quizScore"></div>
+            </section>
+
+            <section class="wish-section hidden">
+                <h2>Make a wish, all!</h2>
+                <p>Blow out the candle (tap the cake) and make a wish for your new year.</p>
+                <div id="wishContainer">
+                    <img id="cake" src="https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExbWpkOGR6cWdtMHFlZHY3cXhwZDN6cnljZXkyeGp2Njg0amZhMXJzNCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/CiNLOB9e3I1Za0oxhp/giphy.gif" alt="Kue Ulang Tahun" style="width: 200px; cursor: pointer;">
+                </div>
+            </section>
+
+            <section class="gallery-section hidden">
+                <h2>Galeri Foto Berdua Kita!!</h2>
+                <p>Klik sembarang poto kalo gasalah ada pesannya</p>
+                <div class="gallery">
+                    <div class="gallery-item" data-title="Kenangan Pertama">
+                        <img src="images/1.jpg" alt="Kenangan Pertama" style="width: 100%; height: auto;">
+                    </div>
+                    <div class="gallery-item" data-title="Kenangan Pertama">
+                        <img src="images/3.jpg" alt="Kenangan Pertama" style="width: 100%; height: auto;">
+                    </div>
+                    <div class="gallery-item" data-title="Kenangan Pertama">
+                        <img src="images/4.jpg" alt="Kenangan Pertama" style="width: 100%; height: auto;">
+                    </div>
+                    <div class="gallery-item" data-title="Kenangan Pertama">
+                        <img src="images/2.jpg" alt="Kenangan Pertama" style="width: 100%; height: auto;">
+                    </div>
+                    <div class="gallery-item" data-title="Kenangan Pertama">
+                        <img src="images/10.jpg" alt="Kenangan Pertama" style="width: 100%; height: auto;">
+                    </div>
+                    <div class="gallery-item" data-title="Kenangan Pertama">
+                        <img src="images/9.jpg" alt="Kenangan Pertama" style="width: 100%; height: auto;">
+                    </div>
+                    <div class="gallery-item" data-title="Kenangan Pertama">
+                        <img src="images/11.jpg" alt="Kenangan Pertama" style="width: 100%; height: auto;">
+                    </div>
+                    <div class="gallery-item" data-title="Kenangan Pertama">
+                        <img src="images/5.jpg" alt="Kenangan Pertama" style="width: 100%; height: auto;">
+                    </div>
+                    <div class="gallery-item" data-title="Kenangan Pertama">
+                        <img src="images/6.jpg" alt="Kenangan Pertama" style="width: 100%; height: auto;">
+                    </div>
+                    <div class="gallery-item" data-title="Kenangan Pertama">
+                        <img src="images/7.jpg" alt="Kenangan Pertama" style="width: 100%; height: auto;">
+                    </div>
+                    <div class="gallery-item" data-title="Kenangan Pertama">
+                        <img src="images/8.jpg" alt="Kenangan Pertama" style="width: 100%; height: auto;">
+                    </div>
+                    <div class="gallery-item" data-title="Kenangan Pertama">
+                        <img src="images/12.jpg" alt="Kenangan Pertama" style="width: 100%; height: auto;">
+                    </div>                    
+                </div>
+            </section>
+
+            <section class="message-section hidden">
+                <h2>A sweet note just for you</h2>
+                <p>Tap below and see what I’ve got for you.</p>
+                <button id="messageBtn" class="btn">Open my heart?</button>
+                <div id="finalMessage"></div>
+            </section>
+        </div>
+
+        <div id="imageModal" class="modal">
+            <div class="modal-content">
+                <span class="modal-close">&times;</span>
+                <h3 id="modalTitle"></h3>
+                <div id="modalBody"></div>
+            </div>
+        </div>
+
+        <footer>
+            <p>Made with all my love for your special day.</p>
+            <p>❤️ saranghaeee ❤️</p>
+        </footer>
+    </div>
+
+<!-- Audio Elements -->
+<!-- Background music: starts muted but will play and unmute after user clicks start -->
+<audio id="bgMusic" src="audio/hmd.mp3" loop muted></audio>
+<!-- Audio that only plays when user manually triggers -->
+<audio id="specialAudio" src="audio/uby.aac"></audio>
+<!-- Button to play special audio, shown only after celebration started -->
+<button id="playSpecialAudioBtn" class="btn hidden" style="position: fixed; bottom: 20px; right: 20px; z-index: 110;">Putar Musik Spesial</button>
+
+    <script>
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const bgMusic = document.getElementById('bgMusic');
+        const specialAudio = document.getElementById('specialAudio');
+        const playSpecialAudioBtn = document.getElementById('playSpecialAudioBtn');
+        const startBtn = document.getElementById('startBtn');
+
+        // Autoplay background music but muted initially to comply with browser policies
+        // On user clicking start, unmute and play background music
+        startBtn.addEventListener('click', () => {
+            // Show content and hide start button
+            document.getElementById('content').classList.remove('hidden');
+            startBtn.classList.add('hidden');
+
+            // Scroll to first section
+            document.querySelector('.memory-section').scrollIntoView({ behavior: 'smooth' });
+
+            // Play background music unmuted
+            bgMusic.muted = false;
+            bgMusic.play().catch((error) => {
+                console.log('Autoplay bgMusic failed, user interaction required to play.', error);
+            });
+
+            // Show the special audio play button once the celebration starts
+            playSpecialAudioBtn.classList.remove('hidden');
+        });
+
+        // Setup special audio play button
+        playSpecialAudioBtn.addEventListener('click', () => {
+            specialAudio.play().catch((error) => {
+                console.log('Error playing special audio:', error);
+            });
+            playSpecialAudioBtn.disabled = true;
+            playSpecialAudioBtn.textContent = 'Musik Spesial Diputar';
+        });
+    });
+
+
+                
+        // Fungsi untuk membuat konfeti
+        function createConfetti() {
+            const colors = ['#ff4081', '#7c4dff', '#ffeb3b', '#00e676', '#40c4ff'];
+            const confettiCount = 150;
+            
+            for (let i = 0; i < confettiCount; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.left = Math.random() * 100 + 'vw';
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.width = Math.random() * 10 + 5 + 'px';
+                confetti.style.height = Math.random() * 10 + 5 + 'px';
+                confetti.style.animationDuration = Math.random() * 3 + 2 + 's';
+                document.body.appendChild(confetti);
+                
+                // Hapus konfeti setelah animasi selesai
+                setTimeout(() => {
+                    confetti.remove();
+                }, 5000);
+            }
+        }
+
+        // Fungsi untuk membuat efek hati bergerak
+        function createFloatingHearts() {
+            const container = document.querySelector('header');
+            for (let i = 0; i < 20; i++) {
+                const heart = document.createElement('div');
+                heart.className = 'heart';
+                heart.innerHTML = '❤️';
+                heart.style.left = Math.random() * 100 + '%';
+                heart.style.top = Math.random() * 100 + '%';
+                heart.style.fontSize = Math.random() * 1 + 0.5 + 'rem';
+                heart.style.animationDelay = Math.random() * 5 + 's';
+                container.appendChild(heart);
+                
+                // Animasi untuk hati
+                setTimeout(() => {
+                    heart.style.opacity = '1';
+                    heart.style.transform = `translateY(-${Math.random() * 100 + 50}px)`;
+                    heart.style.transition = `all ${Math.random() * 3 + 2}s ease`;
+                }, Math.random() * 1000);
+                
+                // Hapus hati setelah animasi
+                setTimeout(() => {
+                    heart.style.opacity = '0';
+                    setTimeout(() => heart.remove(), 1000);
+                }, Math.random() * 3000 + 2000);
+            }
+        }
+
+        // Interval untuk memunculkan hati secara berkala
+        setInterval(createFloatingHearts, 3000);
+
+        // Permainan memory card
+        function setupMemoryGame() {
+            const memoryGame = document.getElementById('memoryGame');
+            const symbols = ['❤️', '💖', '💗', '💓', '💕', '💞', '💘', '💝'];
+            const allSymbols = [...symbols, ...symbols];
+            const shuffledSymbols = allSymbols.sort(() => Math.random() - 0.5);
+            
+            let flippedCards = [];
+            let matchedPairs = 0;
+            
+            // Buat kartu memory
+            shuffledSymbols.forEach((symbol, index) => {
+                const card = document.createElement('div');
+                card.className = 'memory-card';
+                card.dataset.symbol = symbol;
+                card.dataset.index = index;
+                
+                card.addEventListener('click', () => {
+                    // Jangan biarkan mengklik kartu yang sudah cocok atau sedang dibalik
+                    if (card.classList.contains('matched') || card.classList.contains('flipped') || flippedCards.length >= 2) {
+                        return;
+                    }
+                    
+                    // Balik kartu
+                    card.classList.add('flipped');
+                    card.textContent = symbol;
+                    flippedCards.push(card);
+                    
+                    // Cek jika sudah membalik 2 kartu
+                    if (flippedCards.length === 2) {
+                        // Cek apakah pasangan cocok
+                        if (flippedCards[0].dataset.symbol === flippedCards[1].dataset.symbol) {
+                            flippedCards.forEach(c => c.classList.add('matched'));
+                            matchedPairs++;
+                            flippedCards = [];
+                            
+                            // Cek jika semua pasangan sudah ditemukan
+                            if (matchedPairs === symbols.length) {
+                                document.getElementById('memoryMessage').innerHTML = '<p>Selamat! Kamu menemukan semua pasangan! mu uda nemuin aku belum??</p>';
+                                createConfetti();
+                                setTimeout(() => {
+                                    document.querySelector('.quiz-section').classList.remove('hidden');
+                                    document.querySelector('.quiz-section').scrollIntoView({ behavior: 'smooth' });
+                                    setupQuiz();
+                                }, 1500);
+                            }
+                        } else {
+                            // Jika tidak cocok, balik kembali kedua kartu
+                            setTimeout(() => {
+                                flippedCards.forEach(c => {
+                                    c.classList.remove('flipped');
+                                    c.textContent = '';
+                                });
+                                flippedCards = [];
+                            }, 1000);
+                        }
+                    }
+                });
+                
+                memoryGame.appendChild(card);
+            });
+        }
+
+        // Fungsi untuk membuat quiz
+        function setupQuiz() {
+            const quizContainer = document.getElementById('quizContainer');
+            const quizScore = document.getElementById('quizScore');
+            let currentQuestion = 0;
+            let score = 0;
+            
+            const questions = [
+                {
+                    question: "Apa hal yang paling gue suka??",
+                    answers: [
+                        "Kopi", 
+                        "Geprek D'Komak", 
+                        "Alya Rafiah Siregar", 
+                        "Miee"
+                    ],
+                    correct: 1 // Ganti dengan indeks jawaban yang benar (0-3)
+                },
+                {
+                    question: "Tanggal berapa gue confess?",
+                    answers: [
+                        "26 September 2024", 
+                        "27 September 2024", 
+                        "18 Oktober 2024", 
+                        "Hari ini"
+                    ],
+                    correct: 0 // Ganti dengan indeks jawaban yang benar (0-3)
+                },
+                {
+                    question: "Apa yang paling gue suka dari lo?",
+                    answers: [
+                        "Senyum alya", 
+                        "Sifat alya", 
+                        "Semua hal tentang alya", 
+                        "Mata cokelat alya"
+                    ],
+                    correct: 3 // Ganti dengan indeks jawaban yang benar (0-3)
+                }
+            ];
+            
+            function showQuestion() {
+                const q = questions[currentQuestion];
+                
+                quizContainer.innerHTML = `
+                    <div class="question">${q.question}</div>
+                    <div class="answers">
+                        ${q.answers.map((answer, index) => 
+                            `<button class="answer-btn" data-index="${index}">${answer}</button>`
+                        ).join('')}
+                    </div>
+                `;
+                
+                // Tambahkan event listener untuk jawaban
+                document.querySelectorAll('.answer-btn').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const selectedIndex = parseInt(this.dataset.index);
+                        const correct = selectedIndex === q.correct;
+                        
+                        // Tunjukkan jawaban yang benar
+                        document.querySelectorAll('.answer-btn').forEach((btn, idx) => {
+                            btn.disabled = true;
+                            if (idx === q.correct) {
+                                btn.classList.add('correct');
+                            } else if (idx === selectedIndex && !correct) {
+                                btn.classList.add('incorrect');
+                            }
+                        });
+                        
+                        if (correct) {
+                            score++;
+                        }
+                        
+                        // Lanjut ke pertanyaan berikutnya atau selesai
+                        setTimeout(() => {
+                            currentQuestion++;
+                            if (currentQuestion < questions.length) {
+                                showQuestion();
+                            } else {
+                                showResult();
+                            }
+                        }, 1000);
+                    });
+                });
+            }
+            
+            function showResult() {
+                quizContainer.innerHTML = '';
+                quizScore.innerHTML = `<p>Yeay skor mu ${score} dari ${questions.length}!</p>`;
+                
+                // Tampilkan section berikutnya setelah quiz selesai
+                document.querySelector('.wish-section').classList.remove('hidden');
+                document.querySelector('.wish-section').scrollIntoView({ behavior: 'smooth' });
+                setupWishSection();
+            }
+            
+            showQuestion();
+        }
+
+        // Fungsi untuk setup section permohonan
+        function setupWishSection() {
+            const wishContainer = document.getElementById('wishContainer');
+            const cake = document.getElementById('cake');
+            
+            // Tambahkan balon-balon
+            for (let i = 0; i < 20; i++) {
+                const balloon = document.createElement('div');
+                balloon.className = 'balloon';
+                balloon.style.left = Math.random() * 100 + '%';
+                balloon.style.backgroundColor = `hsl(${Math.random() * 360}, 80%, 60%)`;
+                balloon.style.animationDelay = Math.random() * 5 + 's';
+                balloon.style.animationDuration = Math.random() * 5 + 5 + 's';
+                wishContainer.appendChild(balloon);
+            }
+            
+            let isBlown = false;
+            cake.addEventListener('click', () => {
+                if (isBlown) return;
+                isBlown = true;
+                
+                // Animasi tiup lilin
+                createConfetti();
+                cake.style.filter = 'brightness(1.2)';
+                
+                setTimeout(() => {
+                    // Tampilkan gallery section setelah meniup lilin
+                    document.querySelector('.gallery-section').classList.remove('hidden');
+                    document.querySelector('.gallery-section').scrollIntoView({ behavior: 'smooth' });
+                    setupGallery();
+                }, 2000);
+            });
+        }
+
+        // Setup galeri
+        function setupGallery() {
+            const galleryItems = document.querySelectorAll('.gallery-item');
+            const modal = document.getElementById('imageModal');
+            const modalTitle = document.getElementById('modalTitle');
+            const modalBody = document.getElementById('modalBody');
+            const modalClose = document.querySelector('.modal-close');
+            
+        galleryItems.forEach(item => {
+            item.addEventListener('click', () => {
+                const title = item.dataset.title;
+                const personalNote = "Foto berdua kita dikit banget yaa"; // bisa ganti sesuai item
+
+                modalTitle.textContent = title;
+                modalBody.innerHTML = `
+                    <div style="padding: 20px;">
+                        ${item.textContent} <br><br>
+                        <strong></strong> ${personalNote} <br>
+                        Mau nambahin foto kita berdua lagi ga alyaa??
+                    </div>`;
+                modal.style.display = 'flex';
+            });
+        });
+
+            
+            modalClose.addEventListener('click', () => {
+                modal.style.display = 'none';
+            });
+            
+            window.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    modal.style.display = 'none';
+                }
+            });
+            
+            // Tampilkan section pesan setelah gallery
+            document.querySelector('.message-section').classList.remove('hidden');
+        }
+
+        // Setup pesan akhir
+        function setupFinalMessage() {
+            const messageBtn = document.getElementById('messageBtn');
+            const finalMessage = document.getElementById('finalMessage');
+            
+            messageBtn.addEventListener('click', () => {
+                createConfetti();
+                document.body.style.backgroundColor = '#ffd6ff';
+                
+                // Animasi pesan muncul
+                setTimeout(() => {
+                    finalMessage.style.transform = 'scale(1)';
+                    finalMessage.innerHTML = `
+                        <p>Selamat ulang tahun yang ke 20, teman yang paling aku sayangg!!</p>
+                        <p>semoga di tahun yang baru ini kamu selalu dilimpahi kebahagiaan, sehat selalu, 
+                            dan semua wishlist mu bisa terwujud ya.</p>
+                        <p>Semoga di tahun baru ini kamu selalu dilimpahi kebahagiaan, 
+                        kesehatan, dan semua impianmu dapat terwujud.</p>
+                        <p>kalo rasanya ada yang berat, tenang ajaa. cerita ke akuu, aku dibelakang mu terus kok!!</p>
+                        <p>trus juga aku minta maapp padahal aku punya rencana ngerayain ulang tahun mu, tapi kayanya aku undur dulu sampe aku sembuh yaa. 
+                            pas ngewish tadi mu pasti gaada ngedoain aku sembuh kan😡</p>
+                        <p>intinya happy birthday ya alyaaa!!lov uuu!!💛</p>
+                    `;
+                }, 500);
+            });
+        }
+
+        // Start the celebration
+        document.getElementById('startBtn').addEventListener('click', function() {
+            document.getElementById('content').classList.remove('hidden');
+            this.classList.add('hidden');
+            
+            // Scroll ke section pertama
+            document.querySelector('.memory-section').scrollIntoView({ behavior: 'smooth' });
+            
+            // Mulai setup semua section
+            setupMemoryGame();
+            setupFinalMessage();
+            
+            createConfetti();
+        });
+    </script>
+</body>
+</html>
+
+
+ 
+ 
+
